@@ -21,6 +21,8 @@ class User(person):
         self.transaction_date=None
         self.bank_balance=0
         self.loan_taken=0
+        self.deposit=None
+        self.withdraw=None
 
     def create_account(self,email,password):
         self._email=email
@@ -29,12 +31,14 @@ class User(person):
         User.flag+=1
 
     def deposit_money(self,amount,bank):
+        self.deposit=amount
         if amount > 0:
             self.bank_balance+=amount
             bank.money+=amount
             print('Money deposited successfully')
     
     def withdraw_money(self,amount,bank):
+            self.withdraw=amount
             if amount <=self.bank_balance:
                 if(amount < bank.money):
                     self.bank_balance-=amount
@@ -61,12 +65,15 @@ class User(person):
         else:
             print('Not enough money to transfer')
 
-    def check_transfer_history(self,bank,receiver):
-        print('Sender Name: ',self.name)
+    def check_transaction_history(self,bank,receiver):
+        print('User Name: ',self.name)
         print('Transaction Time : ',self.transaction_start)
         print('Transaction Time : ',self.transaction_date)
         print('Receiver Name: ',bank.user_info[receiver]["Name"])
         print('Money send: ',(bank.user_info[self.user_id]["Balance"]-bank.user_info[receiver]["Balance"]))
+        print('Money deposited: ',bank.user_info[self.user_id]["Money Deposited"])
+        print('Money withdrawn: ',bank.user_info[self.user_id]["Money withdrawn"])
+
     
     def take_loan(self,amount,admin):
         if(admin.loan_feature=='on'):
@@ -85,7 +92,7 @@ class Admin(person):
         self.loan_feature=None
         
     def add_user(self,user,bank):
-        bank.user_info[user.user_id]={'Name':user.name,'Address':user.address,'profession':user.profession,'Balance':user.bank_balance,'Loan Taken':user.loan_taken}
+        bank.user_info[user.user_id]={'Name':user.name,'Address':user.address,'profession':user.profession,'Balance':user.bank_balance,'Loan Taken':user.loan_taken,'Money Deposited':user.deposit,'Money withdrawn':user.withdraw}
 
     def create_account(self,email,password):
         self._email=email
@@ -121,5 +128,5 @@ chanchal.create_account('chanchal@gmail.com', 123)
 admin.add_user(chayan,bank)
 admin.add_user(chanchal,bank)
 chayan.transfer_balance(bank, 101, 5000)
-chayan.check_transfer_history(bank, 101)
+chayan.check_transaction_history(bank, 101)
 admin.total_loan_taken(bank)
